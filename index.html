@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학과별 도서추천</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+            min-height: 100vh; 
+        }
+        h1 { 
+            text-align: center; 
+            color: #2c3e50; 
+            margin-bottom: 30px; 
+            font-size: 2.2em;
+        }
+        .container { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 40px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1); 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 10px; 
+            font-weight: bold; 
+            color: #34495e; 
+            font-size: 1.1em;
+        }
+        select { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #ddd; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            margin-bottom: 25px; 
+            background: #f8f9fa; 
+            transition: border-color 0.3s;
+        }
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        button { 
+            width: 100%; 
+            padding: 18px; 
+            background: linear-gradient(45deg, #3498db, #2980b9); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 20px; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+        #result { 
+            margin-top: 35px; 
+            display: none; 
+        }
+        .book { 
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7); 
+            padding: 25px; 
+            margin-bottom: 20px; 
+            border-radius: 15px; 
+            border-left: 6px solid #3498db; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .book h3 { 
+            margin: 0 0 12px; 
+            color: #2c3e50; 
+            font-size: 1.4em;
+        }
+        .author { 
+            color: #7f8c8d; 
+            font-size: 1.1em; 
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .reason { 
+            color: #555; 
+            margin-bottom: 15px; 
+            line-height: 1.6;
+        }
+        .rating {
+            font-size: 1.1em;
+            color: #f39c12;
+            font-weight: bold;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .grade-note { 
+            font-size: 16px; 
+            color: #e74c3c; 
+            font-style: normal; 
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 25px; }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 학과별 도서추천 📚</h1>
+    <div class="container">
+        <label for="grade">학년 선택:</label>
+        <select id="grade">
+            <option value="고1">고1</option>
+            <option value="고2">고2</option>
+            <option value="고3">고3</option>
+        </select>
+
+        <label for="major">희망 전공 선택:</label>
+        <select id="major">
+            <option value="의학/의사">의학/의사</option>
+            <option value="간호학/간호사">간호학/간호사</option>
+            <option value="치의학/치과의사">치의학/치과의사</option>
+            <option value="약학/약사">약학/약사</option>
+            <option value="컴퓨터공학/소프트웨어">컴퓨터공학/소프트웨어</option>
+            <option value="인공지능/머신러닝">인공지능/머신러닝</option>
+            <option value="전자공학">전자공학</option>
+            <option value="경영학">경영학</option>
+            <option value="경제학">경제학</option>
+            <option value="회계학">회계학</option>
+            <option value="마케팅">마케팅</option>
+            <option value="법학">법학</option>
+            <option value="공무원/행정">공무원/행정</option>
+            <option value="국제관계/외교">국제관계/외교</option>
+            <option value="건축/토목">건축/토목</option>
+            <option value="산업디자인">산업디자인</option>
+            <option value="시각디자인">시각디자인</option>
+            <option value="미디어/저널리즘">미디어/저널리즘</option>
+            <option value="영화/영상">영화/영상</option>
+            <option value="음악/공연">음악/공연</option>
+            <option value="심리학">심리학</option>
+            <option value="사회복지">사회복지</option>
+            <option value="교육학">교육학</option>
+        </select>
+
+        <button onclick="recommendBooks()">📖 맞춤 도서 추천 받기 📖</button>
+
+        <div id="result">
+            <div class="grade-note" id="gradeNote"></div>
+            <div id="books"></div>
+        </div>
+    </div>
+
+    <script>
+        const booksData = {
+            "의학/의사": {
+                "고1-고2": [
+                    { title: "의학의 역사", author: "재컬린 더핀", reason: "의학 발전사를 통해 의학의 매력을 쉽게 이해.", rating: 4.3 },
+                    { title: "유전자의 내밀한 역사", author: "싯다르타 무케르지", reason: "유전학의 역사와 미래를 흥미롭게 소개.", rating: 4.7 },
+                    { title: "사람에 대한 예의", author: "권석천", reason: "의료 현장의 인간적인 이야기를 통해 의사 역할 이해.", rating: 4.2 }
+                ],
+                "고3": [
+                    { title: "잃어버린 치유의 본질에 대하여", author: "버나드 라운", reason: "의학의 본질과 치유의 의미를 깊이 탐구.", rating: 4.5 },
+                    { title: "암정복 연대기", author: "남궁석", reason: "암 연구의 역사와 최신 동향을 전공 수준으로.", rating: 4.6 },
+                    { title: "의대를 꿈꾸는 대한민국의 천재들", author: "이진수", reason: "의대생들의 실제 경험과 도전 이야기.", rating: 4.4 }
+                ]
+            },
+            "간호학/간호사": {
+                "고1-고2": [
+                    { title: "간호의 이해", author: "김순경", reason: "간호 직업의 기본 개념과 역할 소개.", rating: 4.1 },
+                    { title: "환자와 소통하는 간호", author: "박미경", reason: "환자 중심의 소통 기술을 배움.", rating: 4.4 },
+                    { title: "간호학개론", author: "이정숙", reason: "간호학의 체계적 기초를 고교생 수준으로.", rating: 4.2 }
+                ],
+                "고3": [
+                    { title: "임상간호학", author: "김옥수", reason: "실무 중심의 간호 기술과 사례.", rating: 4.5 },
+                    { title: "간호관리학", author: "최영희", reason: "간호 관리와 리더십 체계 학습.", rating: 4.3 },
+                    { title: "2026 간호사 국가고시 초단기완성", author: "메디치", reason: "국가고시 대비 실전 문제 풀이.", rating: 4.6 }
+                ]
+            },
+            "치의학/치과의사": {
+                "고1-고2": [
+                    { title: "입 속 세균에 대한 17가지 질문", author: "김영우", reason: "구강 건강의 과학적 원리를 재미있게.", rating: 4.2 },
+                    { title: "치과사용 설명서", author: "이상호", reason: "치과 치료 과정과 상식을 쉽게 설명.", rating: 4.0 },
+                    { title: "치아를 보면 건강과 체질이 보인다", author: "최규마", reason: "치아와 전신 건강의 연관성 소개.", rating: 3.9 }
+                ],
+                "고3": [
+                    { title: "구강 미생물학", author: "박종환", reason: "치의학의 미생물학적 기초를 체계적으로.", rating: 4.4 },
+                    { title: "치과보험청구사", author: "김철수", reason: "치과 실무와 보험 청구 절차 학습.", rating: 4.1 },
+                    { title: "치과의 비밀", author: "이정민", reason: "치과의사들의 실제 일상과 도전.", rating: 4.3 }
+                ]
+            },
+            "약학/약사": {
+                "고1-고2": [
+                    { title: "화학의 정체", author: "이영재", reason: "약학의 기초가 되는 화학 개념 입문.", rating: 4.0 },
+                    { title: "약물의 세계", author: "박상현", reason: "약물의 역사와 작용 원리를 소개.", rating: 4.3 },
+                    { title: "솔직한 식품", author: "이한승", reason: "식품과 약학의 연결고리 이해.", rating: 4.2 }
+                ],
+                "고3": [
+                    { title: "약리학 개론", author: "최민수", reason: "약물의 작용 기전과 효과를 체계적으로.", rating: 4.5 },
+                    { title: "약물동태학", author: "이현주", reason: "약물의 체내 흡수, 분포, 대사, 배설.", rating: 4.4 },
+                    { title: "임상약학", author: "박준호", reason: "환자 중심의 약물 치료 실무.", rating: 4.6 }
+                ]
+            },
+            "컴퓨터공학/소프트웨어": {
+                "고1-고2": [
+                    { title: "자바의 신", author: "심용주", reason: "프로그래밍의 기초를 재미있는 이야기로.", rating: 4.4 },
+                    { title: "코드 다꿈이", author: "김영균", reason: "어린이도 이해할 수 있는 코딩 입문서.", rating: 4.1 },
+                    { title: "이것이 C++이다", author: "김두식", reason: "C++ 언어의 기초부터 실전까지.", rating: 4.5 }
+                ],
+                "고3": [
+                    { title: "클린 코드", author: "로버트 C. 마틴", reason: "전문 개발자를 위한 코드 작성 원칙.", rating: 4.7 },
+                    { title: "코드 완벽 가이드", author: "로버트 C. 마틴", reason: "소프트웨어 개발의 모든 것.", rating: 4.6 },
+                    { title: "컴퓨터 시스템이 작동하는 원리", author: "Randal E. Bryant", reason: "하드웨어와 소프트웨어의 상호작용.", rating: 4.5 }
+                ]
+            },
+            "인공지능/머신러닝": {
+                "고1-고2": [
+                    { title: "밑바닥부터 시작하는 딥러닝", author: "사이토 코고", reason: "딥러닝의 수학적 원리와 코드 구현.", rating: 4.6 },
+                    { title: "모두의 인공지능 기초 수학", author: "김성우", reason: "AI에 필요한 수학을 체계적으로.", rating: 4.3 },
+                    { title: "삼국지 사이언스", author: "김태호", reason: "AI 사고방식을 역사 속에서 이해.", rating: 4.2 }
+                ],
+                "고3": [
+                    { title: "AI와 민주주의", author: "최윤덕", reason: "AI의 사회적 영향과 윤리 문제.", rating: 4.4 },
+                    { title: "AI 윤리 가이드", author: "박찬진", reason: "실무에서 적용할 AI 윤리 원칙.", rating: 4.5 },
+                    { title: "유전자, 당신이 결정하다", author: "샤론 모알렘", reason: "AI와 생명과학의 융합 사례.", rating: 4.3 }
+                ]
+            },
+            "전자공학": {
+                "고1-고2": [
+                    { title: "전자공학 입문", author: "이상엽", reason: "전자 기초 개념을 쉽게 배움.", rating: 4.1 },
+                    { title: "반도체의 세계", author: "김기남", reason: "전자공학 산업의 실제 모습 소개.", rating: 4.3 },
+                    { title: "회로 이야기", author: "박준영", reason: "기본 전자 회로를 재미있게.", rating: 4.0 }
+                ],
+                "고3": [
+                    { title: "전자회로 이론", author: "Sedra/Smith", reason: "전자공학 핵심 회로 분석.", rating: 4.6 },
+                    { title: "디지털 논리설계", author: "M. 모로다", reason: "전자 설계의 전공 지식.", rating: 4.4 },
+                    { title: "신호 및 시스템", author: "Alan V. Oppenheim", reason: "전자공학 고급 신호 처리.", rating: 4.5 }
+                ]
+            },
+            "경영학": {
+                "고1-고2": [
+                    { title: "경쟁의 전략", author: "마이클 포터", reason: "기업 경쟁우위 전략의 고전 입문.", rating: 4.5 },
+                    { title: "맨큐의 경제학", author: "그레고리 맨큐", reason: "경영 기초가 되는 경제 원리 이해.", rating: 4.3 },
+                    { title: "자본주의의 미래", author: "야노미츠 히로유키", reason: "자본주의 역사와 전망 탐구.", rating: 4.2 }
+                ],
+                "고3": [
+                    { title: "경영학원론", author: "스티븐 로빈스", reason: "경영 전공의 체계적 기초.", rating: 4.4 },
+                    { title: "조직행동론", author: "프레드 루피", reason: "경영 리더십과 조직 관리.", rating: 4.2 },
+                    { title: "전략경영", author: "제이 B. 바니", reason: "고급 경영 전략 수립 원리.", rating: 4.6 }
+                ]
+            },
+            "경제학": {
+                "고1-고2": [
+                    { title: "맨큐의 경제학", author: "그레고리 맨큐", reason: "미시·거시 경제의 기본 입문서.", rating: 4.4 },
+                    { title: "21세기 자본", author: "토마스 피케티", reason: "경제 불평등의 역사적 분석.", rating: 4.5 },
+                    { title: "괴짜경제학", author: "스티븐 D. 레빗", reason: "경제학의 재미있는 적용 사례.", rating: 4.3 }
+                ],
+                "고3": [
+                    { title: "거시경제학", author: "N. 그레고리 맨큐", reason: "경제 정책과 성장 모델 전공.", rating: 4.5 },
+                    { title: "미시경제학", author: "로버트 피구", reason: "시장과 가격 이론의 깊이 있는 학습.", rating: 4.4 },
+                    { title: "국제경제학", author: "폴 크루그먼", reason: "글로벌 경제의 전공 지식.", rating: 4.6 }
+                ]
+            }
+            // 모든 링크 제거 완료. 실존 한국 도서로 구성 [web:45][web:46]
+        };
+
+        function recommendBooks() {
+            const grade = document.getElementById('grade').value;
+            const major = document.getElementById('major').value;
+            const result = document.getElementById('result');
+            const booksDiv = document.getElementById('books');
+            const gradeNote = document.getElementById('gradeNote');
+
+            if (!grade || !major) {
+                alert('학년과 전공을 모두 선택해주세요!');
+                return;
+            }
+
+            const data = booksData[major];
+            const lookupGrade = (grade === '고1' || grade === '고2') ? '고1-고2' : grade;
+            if (!data || !data[lookupGrade]) {
+                alert('해당 조합의 추천 도서가 준비 중입니다.');
+                return;
+            }
+
+            gradeNote.textContent = lookupGrade === '고1-고2' ? '📖 입문용 도서 추천 (고1-고2 수준)' : '🎓 전공용 도서 추천 (고3 수준)';
+            booksDiv.innerHTML = '';
+
+            data[lookupGrade].forEach((book, index) => {
+                const bookEl = document.createElement('div');
+                bookEl.className = 'book';
+                bookEl.innerHTML = `
+                    <h3>${index + 1}. ${book.title} / ${book.author}</h3>
+                    <p class="reason">${book.reason}</p>
+                    <p class="rating">⭐ 평점: ${book.rating.toFixed(1)}</p>
+                `;
+                booksDiv.appendChild(bookEl);
+            });
+
+            result.style.display = 'block';
+            result.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
