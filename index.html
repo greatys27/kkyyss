@@ -22,7 +22,7 @@
         .container { 
             background: white; 
             border-radius: 20px; 
-            padding: 40px; 
+            padding: 30px; 
             box-shadow: 0 15px 40px rgba(0,0,0,0.1); 
         }
         label { 
@@ -36,9 +36,9 @@
             width: 100%; 
             padding: 15px; 
             border: 2px solid #ddd; 
-            border-radius: 10px; 
+            border-radius: 6px; 
             font-size: 16px; 
-            margin-bottom: 25px; 
+            margin-bottom: 24px; 
             background: #f8f9fa; 
             transition: border-color 0.3s;
         }
@@ -62,16 +62,22 @@
             box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
         }
         #result { 
-            margin-top: 35px; 
+            margin-top: 20px; 
             display: none; 
         }
         .book { 
             background: linear-gradient(135deg, #ecf0f1, #bdc3c7); 
-            padding: 25px; 
-            margin-bottom: 20px; 
+            padding: 15px; 
+            margin-bottom: 36px; 
             border-radius: 15px; 
-            border-left: 6px solid #3498db; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+            will-change: transform;
+        }
+        .book:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 35px rgba(0,0,0,0.14);
+            cursor: pointer;
         }
         .book h3 { 
             margin: 0 0 12px; 
@@ -79,13 +85,12 @@
             font-size: 1.4em;
         }
         .author { 
-            color: #7f8c8d; 
+            color: #545454; 
             font-size: 1.1em; 
             margin-bottom: 10px;
-            font-style: italic;
         }
         .reason { 
-            color: #555; 
+            color: #484848; 
             margin-bottom: 15px; 
             line-height: 1.6;
         }
@@ -97,15 +102,24 @@
             padding-top: 10px;
             border-top: 1px solid #ddd;
         }
+        .purchase-top {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .link {
+            color: #2980b9;
+            text-decoration: none;
+            font-weight: 600;
+        }
         .grade-note { 
             font-size: 16px; 
-            color: #e74c3c; 
+            color: #08052eab; 
             font-style: normal; 
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom:60px;
             padding: 15px;
-            background: rgba(231, 76, 60, 0.1);
-            border-radius: 10px;
+            background: rgba(124, 142, 210, 0.115);
+            border-radius: 0px;
         }
         @media (max-width: 768px) {
             .container { padding: 25px; }
@@ -113,8 +127,8 @@
         }
     </style>
 </head>
-<body>
-    <h1>📚 학과별 도서추천 📚</h1>
+<body>s
+    <h1>학과별 도서추천</h1>
     <div class="container">
         <label for="grade">학년 선택:</label>
         <select id="grade">
@@ -162,9 +176,9 @@
         const booksData = {
             "의학/의사": {
                 "고1-고2": [
-                    { title: "하리하라의 청소년을 위한 의학 이야기", author: "하리하라", reason: "청소년 수준에서 의학 기초를 재미있게 소개하며 진로 탐색에 적합함.", link: "https://www.yes24.com/Product/Goods/118730178", rating: 4.3 },
+                    { title: "하리하라의 청소년을 위한 의학 이야기", author: "하리하라", reason: "청소년 수준에서 의학 기초를 재미있게 소개하며 진로 탐색에 적합함.", link: "https://www.yes24.com/product/goods/13867293", rating: 4.3 },
                     { title: "의학 오디세이", author: "최규상", reason: "인류 의학 역사를 통해 의학 매력을 쉽게 이해할 수 있는 입문서.", link: "https://www.yes24.com/product/goods/12206966", rating: 4.4 },
-                    { title: "내 몸 안의 주치의, 면역학 이야기", author: "데이비드 T. 맥스", reason: "면역학을 생생한 이야기로 풀어 생명과학 입문에 좋음.", link: "https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=2247559", rating: 4.2 }
+                    { title: "내 몸 안의 주치의, 면역학 이야기", author: "데이비드 T. 맥스", reason: "면역학을 생생한 이야기로 풀어 생명과학 입문에 좋음.", link: "https://www.yes24.com/product/goods/80120492", rating: 4.2 }
                 ],
                 "고3": [
                     { title: "살인단백질 이야기", author: "데이비드 T. 맥스", reason: "프리온 등 전공 주제를 다루며 의학 연구 깊이를 보여줌.", link: "https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=2247559", rating: 4.5 },
@@ -428,7 +442,8 @@
                 const bookEl = document.createElement('div');
                 bookEl.className = 'book';
                 bookEl.innerHTML = `
-                    <h3>${index + 1}. ${book.title} / ${book.author}</h3>
+                    <h3>${index + 1}. ${book.title}</h3>
+                    <p/class="author">저자: ${book.author}</p>
                     <p class="reason">${book.reason}</p>
                     <p class="rating">⭐ 평점: ${book.rating.toFixed(1)}</p>
                     <a href="${book.link}" target="_blank" class="link">🛒 예스24/알라딘에서 구매하기</a>
